@@ -24,12 +24,39 @@ body{
 background:var(--bg);
 display:flex;
 justify-content:center;
+position: relative; /* เพิ่มสำหรับพื้นหลัง */
+}
+
+/* ---- CSS สำหรับพื้นหลังตัวหนังสือตกลงมา ---- */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* ให้อยู่หลังสุด */
+    overflow: hidden;
+    pointer-events: none; /* ไม่ให้รบกวนการคลิกบนหน้าเว็บ */
+}
+
+.falling-text {
+    position: absolute;
+    color: var(--dark); /* สีของตัวอักษรพื้นหลัง */
+    white-space: nowrap;
+    animation: fall linear infinite;
+    opacity: 0.3; /* ความโปร่งใส */
+}
+
+@keyframes fall {
+    0% { transform: translateY(-10vh); }
+    100% { transform: translateY(110vh); }
 }
 
 .container{
 max-width:500px;
 width:100%;
 padding:20px 15px 40px;
+/* z-index: 1; */
 }
 
 .section{
@@ -213,6 +240,10 @@ border:1px solid #ffeef5;
 </head>
 
 <body>
+
+<!-- กล่องพื้นหลังสำหรับแสดงตัวหนังสือที่ลอยลงมา -->
+<div class="bg-animation" id="bgAnimation"></div>
+
 <div class="container">
 
 <!-- ================================================= -->
@@ -416,5 +447,44 @@ border:1px solid #ffeef5;
 <!-- ================================================= -->
 
 </div>
+
+<!-- สคริปต์สุ่มตัวหนังสือตกลงมา -->
+<script>
+    function createFallingText() {
+        const container = document.getElementById('bgAnimation');
+        // แยกสัญลักษณ์แต่ละตัวออกจากกัน
+        const symbols = ['❤︎', '✿', '⋆', '🎧ྀི', '₊', '⊹'];
+        const numItems = 45; // เพิ่มจำนวนชิ้นให้กระจายทั่วจอ
+
+        for (let i = 0; i < numItems; i++) {
+            let el = document.createElement('div');
+            el.className = 'falling-text';
+            
+            // สุ่มหยิบสัญลักษณ์มา 1 ตัว
+            el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+            
+            // สุ่มตำแหน่งแกน X (ซ้าย-ขวา)
+            el.style.left = Math.random() * 100 + 'vw';
+            
+            // สุ่มความเร็วในการตกลงมา (ให้ช้า-เร็วสลับกัน 10 ถึง 25 วินาที)
+            el.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            
+            // สุ่มเวลาเริ่มต้น เพื่อให้ตกไม่พร้อมกันและกระจายๆ
+            el.style.animationDelay = (Math.random() * -30) + 's';
+            
+            // สุ่มความโปร่งใส
+            el.style.opacity = Math.random() * 0.4 + 0.1;
+            
+            // สุ่มขนาดเล็ก-ใหญ่
+            el.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
+            
+            container.appendChild(el);
+        }
+    }
+
+    // เริ่มทำงานเมื่อโหลดหน้าเว็บเสร็จ
+    window.onload = createFallingText;
+</script>
+
 </body>
 </html>
